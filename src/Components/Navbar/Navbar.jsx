@@ -28,7 +28,6 @@ const Navbar = ({ setSidebar }) => {
                 <img src={notification_icon} alt="" />
                 <img src={profile_icon} className='user-icon' alt="" />
             </div>
-
         </nav>
     )
 }
