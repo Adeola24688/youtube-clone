@@ -8,8 +8,6 @@ import thumbnail6 from '../../assets/thumbnail6.png'
 import thumbnail7 from '../../assets/thumbnail7.png'
 import thumbnail8 from '../../assets/thumbnail8.png'
 
-
-
 const Recommended = () => {
     return (
         <div className='recommended'>

@@ -30,9 +30,6 @@ const Navbar = ({ setSidebar }) => {
             </div>
 
         </nav>
-
-
-
     )
 }
 

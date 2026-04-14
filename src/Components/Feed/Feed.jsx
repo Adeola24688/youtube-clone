@@ -12,8 +12,6 @@ import fallbackThumbnai6 from "../../assets/thumbnail6.png"
 import fallbackThumbnai7 from "../../assets/thumbnail7.png"
 import fallbackThumbnai8 from "../../assets/thumbnail8.png"
 
-
-
 const Feed = ({ category }) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);

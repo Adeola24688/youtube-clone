@@ -7,7 +7,6 @@ const Video = () => {
         <div className='play-container'>
             <PlayVideo />
             <Recommended />
-
         </div>
     )
 }
