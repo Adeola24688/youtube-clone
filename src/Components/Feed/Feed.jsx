@@ -3,11 +3,25 @@ import './Feed.css';
 import { Link } from 'react-router-dom';
 import { API_KEY } from '../../data';
 import moment from 'moment';
+import fallbackThumbnail from '../../assets/thumbnail1.png';
+import fallbackThumbnai2 from "../../assets/thumbnail2.png"
+import fallbackThumbnai3 from "../../assets/thumbnail3.png"
+import fallbackThumbnai4 from "../../assets/thumbnail4.png"
+import fallbackThumbnai5 from "../../assets/thumbnail5.png"
+import fallbackThumbnai6 from "../../assets/thumbnail6.png"
+import fallbackThumbnai7 from "../../assets/thumbnail7.png"
+import fallbackThumbnai8 from "../../assets/thumbnail8.png"
+
+
 
 const Feed = ({ category }) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const fallbackThumbnails = [fallbackThumbnail, fallbackThumbnai2, fallbackThumbnai3, fallbackThumbnai4, fallbackThumbnai5, fallbackThumbnai6, fallbackThumbnai7, fallbackThumbnai8];
+    const randomFallback = Math.floor(Math.random() * fallbackThumbnails.length);
+    const fallback = fallbackThumbnails[randomFallback];
 
     // Fetch videos
     useEffect(() => {
@@ -67,7 +81,18 @@ const Feed = ({ category }) => {
                         className="card"
                         key={item.id}
                     >
-                        <img src={thumbnail} alt={snippet.title || 'Video thumbnail'} />
+                        <img
+                            src={thumbnail}
+                            alt={snippet.title || 'Video thumbnail'}
+                            onLoad={(e) => {
+                                if (e.target.naturalWidth === 120 && e.target.src.includes('ytimg.com')) {
+                                    if (e.target.src.includes('hqdefault') || e.target.src.includes('maxresdefault') || e.target.src.includes('sddefault')) {
+                                        e.target.src = fallback;
+                                    }
+                                }
+                            }}
+                            onError={(e) => { e.target.src = fallback; e.target.onError = null; }}
+                        />
 
                         <h2>{snippet.title}</h2>
                         <h3>{snippet.channelTitle}</h3>
