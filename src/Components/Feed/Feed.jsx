@@ -59,6 +59,7 @@ const Feed = ({ category }) => {
                     snippet.thumbnails?.maxres?.url ||
                     snippet.thumbnails?.high?.url ||
                     snippet.thumbnails?.medium?.url ||
+                    snippet.thumbnails?.default?.url ||
                     '';
 
                 return (
