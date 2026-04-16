@@ -18,7 +18,7 @@ const PlayVideo = ({ videoId }) => {
        const fetchVideoData = async () => {
 
         const videoDetails_Url = `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`;
-        await fetch(videoDetails_Url).then(res => res.json()).then(data => setApiData(data.items[0]));
+        await fetch(videoDetails_Url).then(res => res.json()).then(data => setApiData(data.items[0]));  
 
 
          }
@@ -37,10 +37,10 @@ const PlayVideo = ({ videoId }) => {
             <h3>{apiData ? apiData.snippet.title : "Title Here"} </h3>
             
             <div className='play-video-info'>
-                <p>{apiData?value_converter(apiData.statistics.viewCount) : "16k"} Views &bull; {moment(apiData.snippet.publishedAt).fromNow()} </p>
+                <p>{apiData?value_converter(apiData.statistics.viewCount) : "16k"} Views &bull; {apiData ? moment(apiData.snippet.publishedAt).fromNow():""}</p>
                 <div>
-                    <span><img src={like} alt="" /> 125</span>
-                    <span><img src={dislike} alt="" /> 2</span>
+                    <span><img src={like} alt="" /> {apiData ? value_converter(apiData.statistics.likeCount) : "155"}</span>
+                    <span><img src={dislike} alt="" /> </span>
                     <span><img src={share} alt="" /> Share</span>
                     <span><img src={save} alt="" /> Save</span>
 
@@ -52,16 +52,16 @@ const PlayVideo = ({ videoId }) => {
             <div className='publisher'>
                 <img src={jack} alt="" />
                 <div>
-                    <p>GreatStack</p>
+                    <p>{apiData ? apiData.snippet.channelTitle : "Channel Name"}</p>
                     <span>1M Subscribers</span>
                 </div>
                 <button>Subscribe</button>
             </div>
             <div className='vid-description'>
-                <p>Channel that makes learning Easy</p>
-                <p>Subscribe GreatStack to watch more Tutorials on web development</p>
+                <p>{apiData ? apiData.snippet.description.slice(0, 250) : "Description Here"}</p>
+                
                 <hr />
-                <h4>130 Comments</h4>
+                <h4>{apiData ? value_converter(apiData.statistics.commentCount) : 102} Comments</h4>
                 <div className='comment'>
                     <img src={user_profile} alt="" />
                     <div>
