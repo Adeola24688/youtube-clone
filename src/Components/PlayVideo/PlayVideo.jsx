@@ -6,8 +6,8 @@ import share from '../../assets/share.png'
 import save from '../../assets/save.png'
 import jack from '../../assets/jack.png'
 import user_profile from '../../assets/user_profile.jpg'
-import { useState } from 'react'
-import { value_converter } from '../../data'
+import { useState, useEffect } from 'react'
+import { value_converter, API_KEY } from '../../data'
 import moment from 'moment'
 
 
@@ -25,7 +25,7 @@ const PlayVideo = ({ videoId }) => {
 
          useEffect(() => {
             fetchVideoData();
-            }, [])
+            }, [videoId])
 
 
 
@@ -33,7 +33,7 @@ const PlayVideo = ({ videoId }) => {
 
     return (
         <div className='play-video'>
-             <iframe  src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}  frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+             <iframe src={`https://www.youtube.com/embed/${videoId}?autoplay=1`} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
             <h3>{apiData ? apiData.snippet.title : "Title Here"} </h3>
             
             <div className='play-video-info'>

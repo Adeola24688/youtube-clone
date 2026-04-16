@@ -28,16 +28,44 @@ const Feed = ({ category }) => {
             setError(null);
 
             try {
-                const url = `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&chart=mostPopular&maxResults=50&regionCode=US&videoCategoryId=${category}&key=${API_KEY}`;
-
-                const response = await fetch(url);
-                const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.error?.message || 'Failed to fetch data');
+                // Build search URL based on category
+                let searchUrl;
+                if (category === 0) {
+                    // For Home, use most popular videos
+                    searchUrl = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&regionCode=US&type=video&order=viewCount&key=${API_KEY}`;
+                } else {
+                    // For other categories, filter by videoCategoryId
+                    searchUrl = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&regionCode=US&type=video&videoCategoryId=${category}&order=viewCount&key=${API_KEY}`;
                 }
 
-                setData(result.items || []);
+                const searchResponse = await fetch(searchUrl);
+                const searchResult = await searchResponse.json();
+
+                if (!searchResponse.ok) {
+                    throw new Error(searchResult.error?.message || 'Failed to fetch data');
+                }
+
+                // Get video IDs from search results
+                const videoIds = searchResult.items?.map(item => item.id.videoId).join(',') || '';
+
+                if (!videoIds) {
+                    setData([]);
+                    return;
+                }
+
+                // Fetch detailed video stats
+                const videosUrl = `https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`;
+                const videosResponse = await fetch(videosUrl);
+                const videosResult = await videosResponse.json();
+
+                // Merge search results with statistics
+                const mergedData = searchResult.items.map((searchItem, index) => ({
+                    ...searchItem,
+                    id: searchItem.id.videoId,
+                    statistics: videosResult.items?.[index]?.statistics || { viewCount: 0 }
+                }));
+
+                setData(mergedData);
             } catch (err) {
                 console.error('Error fetching videos:', err);
                 setError('Failed to load videos');
@@ -65,6 +93,7 @@ const Feed = ({ category }) => {
             {data.map((item) => {
                 const snippet = item.snippet || {};
                 const stats = item.statistics || {};
+                const videoId = item.id;
 
                 const thumbnail =
                     snippet.thumbnails?.maxres?.url ||
@@ -75,9 +104,9 @@ const Feed = ({ category }) => {
 
                 return (
                     <Link
-                        to={`/video/${snippet.categoryId}/${item.id}`}
+                        to={`/video/${snippet.categoryId || 0}/${videoId}`}
                         className="card"
-                        key={item.id}
+                        key={videoId}
                     >
                         <img
                             src={thumbnail}
