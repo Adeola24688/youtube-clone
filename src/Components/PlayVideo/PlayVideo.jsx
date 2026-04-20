@@ -14,6 +14,8 @@ import moment from 'moment'
 const PlayVideo = ({ videoId }) => {
 
        const [apiData, setApiData] = useState(null);
+       const [channelData, setChannelData] = useState(null);
+       const [commentData, setCommentData] = useState([]);
 
        const fetchVideoData = async () => {
 
@@ -23,9 +25,27 @@ const PlayVideo = ({ videoId }) => {
 
          }
 
+         const fetchOtherData = async () => {
+            if (!apiData || !apiData.snippet) return;
+            
+            // Fetching channel details
+            const channelData_Url = `https://youtube.googleapis.com/youtube/v3/channels?key=${API_KEY}&part=snippet,statistics&id=${apiData.snippet.channelId}`;
+            await fetch(channelData_Url).then(res => res.json()).then(data => setChannelData(data.items[0]));
+
+            //fetching comments Data
+            const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&maxResults=50&videoId=${videoId}&key=${API_KEY}`;
+            await fetch(comment_url).then(res => res.json()).then(data => setCommentData(data.items));
+         }
+
+
+
          useEffect(() => {
             fetchVideoData();
             }, [videoId])
+
+            useEffect(() => {
+                fetchOtherData();
+            }, [apiData])
 
 
 
@@ -50,10 +70,10 @@ const PlayVideo = ({ videoId }) => {
 
             <hr />
             <div className='publisher'>
-                <img src={jack} alt="" />
+                <img src={channelData ? channelData.snippet.thumbnails.default.url : ""} alt="" />
                 <div>
                     <p>{apiData ? apiData.snippet.channelTitle : "Channel Name"}</p>
-                    <span>1M Subscribers</span>
+                    <span>{channelData ?value_converter(channelData.statistics.subscriberCount):"1M"} Subscribers</span>
                 </div>
                 <button>Subscribe</button>
             </div>
@@ -62,96 +82,29 @@ const PlayVideo = ({ videoId }) => {
                 
                 <hr />
                 <h4>{apiData ? value_converter(apiData.statistics.commentCount) : 102} Comments</h4>
-                <div className='comment'>
-                    <img src={user_profile} alt="" />
+                {commentData.map((item,index) => {
+                    return (
+                        <div key={index} className='comment'>
+                
+                
+                    <img src={item.snippet.topLevelComment.snippet.authorProfileImageUrl} alt="" />
                     <div>
-                        <h3>Jack Nicholson <span>1 day ago</span></h3>
-                        <p>Web development is the process of building and maintaining websites. It involves creating how a website looks (front-end) and how it works behind the scenes (back-end). Web development is important because it powers many online services and offers great career opportunities.
-                        </p>
+                        <h3>{item.snippet.topLevelComment.snippet.authorDisplayName} <span>1 day ago</span></h3>
+                        <p>{item.snippet.topLevelComment.snippet.textDisplay} </p>
+                        
                         <div className="comment-action">
                             <img src={like} alt="" />
-                            <span>244</span>
+                            <span>{value_converter(item.snippet.topLevelComment.snippet.likeCount)}</span>
                             <img src={dislike} alt="" />
                         </div>
 
                     </div>
                 </div>
-                <div className='comment'>
-                    <img src={user_profile} alt="" />
-                    <div>
-                        <h3>Jack Nicholson <span>1 day ago</span></h3>
-                        <p>Web development is the process of building and maintaining websites. It involves creating how a website looks (front-end) and how it works behind the scenes (back-end). Web development is important because it powers many online services and offers great career opportunities.
-                        </p>
-                        <div className="comment-action">
-                            <img src={like} alt="" />
-                            <span>244</span>
-                            <img src={dislike} alt="" />
-                        </div>
-
-                    </div>
-                </div>
-                <div className='comment'>
-                    <img src={user_profile} alt="" />
-                    <div>
-                        <h3>Jack Nicholson <span>1 day ago</span></h3>
-                        <p>Web development is the process of building and maintaining websites. It involves creating how a website looks (front-end) and how it works behind the scenes (back-end). Web development is important because it powers many online services and offers great career opportunities.
-                        </p>
-                        <div className="comment-action">
-                            <img src={like} alt="" />
-                            <span>244</span>
-                            <img src={dislike} alt="" />
-                        </div>
-
-                    </div>
-                </div>
-                <div className='comment'>
-                    <img src={user_profile} alt="" />
-                    <div>
-                        <h3>Jack Nicholson <span>1 day ago</span></h3>
-                        <p>Web development is the process of building and maintaining websites. It involves creating how a website looks (front-end) and how it works behind the scenes (back-end). Web development is important because it powers many online services and offers great career opportunities.
-                        </p>
-                        <div className="comment-action">
-                            <img src={like} alt="" />
-                            <span>244</span>
-                            <img src={dislike} alt="" />
-                        </div>
-
-                    </div>
-                </div>
-                <div className='comment'>
-                    <img src={user_profile} alt="" />
-                    <div>
-                        <h3>Jack Nicholson <span>1 day ago</span></h3>
-                        <p>Web development is the process of building and maintaining websites. It involves creating how a website looks (front-end) and how it works behind the scenes (back-end). Web development is important because it powers many online services and offers great career opportunities.
-                        </p>
-                        <div className="comment-action">
-                            <img src={like} alt="" />
-                            <span>244</span>
-                            <img src={dislike} alt="" />
-                        </div>
-
-                    </div>
-                </div>
-                <div className='comment'>
-                    <img src={user_profile} alt="" />
-                    <div>
-                        <h3>Jack Nicholson <span>1 day ago</span></h3>
-                        <p>Web development is the process of building and maintaining websites. It involves creating how a website looks (front-end) and how it works behind the scenes (back-end). Web development is important because it powers many online services and offers great career opportunities.
-                        </p>
-                        <div className="comment-action">
-                            <img src={like} alt="" />
-                            <span>244</span>
-                            <img src={dislike} alt="" />
-                        </div>
-
-                    </div>
-                </div>
+                    
+                    )
+                })}
             </div>
-
-
-
-
-        </div>
+        </div>                                      
     )
 }
 

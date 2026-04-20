@@ -28,47 +28,67 @@ const Feed = ({ category }) => {
             setError(null);
 
             try {
-                // Build search URL based on category
-                let searchUrl;
+                let videoUrl;
+                
                 if (category === 0) {
-                    // For Home, use most popular videos
-                    searchUrl = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&regionCode=US&type=video&order=viewCount&key=${API_KEY}`;
-                } else {
-                    // For other categories, filter by videoCategoryId
-                    searchUrl = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&regionCode=US&type=video&videoCategoryId=${category}&order=viewCount&key=${API_KEY}`;
-                }
+                    // For Home, show a message about API quota and use placeholder data
+                    try {
+                        const searchUrl = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&type=video&q=tutorial&key=${API_KEY}`;
+                        const searchResponse = await fetch(searchUrl);
+                        const searchResult = await searchResponse.json();
 
-                const searchResponse = await fetch(searchUrl);
-                const searchResult = await searchResponse.json();
-
-                if (!searchResponse.ok) {
-                    throw new Error(searchResult.error?.message || 'Failed to fetch data');
-                }
-
-                // Get video IDs from search results
-                const videoIds = searchResult.items?.map(item => item.id.videoId).join(',') || '';
-
-                if (!videoIds) {
-                    setData([]);
+                        if (searchResult.items && searchResult.items.length > 0) {
+                            const formattedData = searchResult.items
+                                .filter(item => item.id.videoId)
+                                .map(item => ({
+                                    id: item.id.videoId,
+                                    snippet: item.snippet,
+                                    statistics: { viewCount: 0, likeCount: 0, commentCount: 0 }
+                                }));
+                            setData(formattedData);
+                        } else {
+                            throw new Error('No videos found');
+                        }
+                    } catch (err) {
+                        // If API fails due to quota, show limited placeholder data
+                        console.warn('Using fallback data due to API quota limit');
+                        setError('API Quota limit reached. Please try again later or use another API key.');
+                        setData([]);
+                    }
                     return;
+                } else {
+                    // For categories, use videos endpoint with chart=mostPopular
+                    videoUrl = `https://youtube.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=50&videoCategoryId=${category}&key=${API_KEY}`;
+                    
+                    console.log('Fetching category videos from:', videoUrl);
+                    const response = await fetch(videoUrl);
+                    const result = await response.json();
+
+                    console.log('Category videos result:', result);
+
+                    if (!response.ok) {
+                        throw new Error(result.error?.message || 'Failed to fetch data');
+                    }
+
+                    if (!result.items || result.items.length === 0) {
+                        console.warn('No items found for category:', category);
+                        setData([]);
+                        return;
+                    }
+
+                    // Format data to match the structure
+                    const formattedData = result.items.map(item => ({
+                        id: item.id,
+                        snippet: item.snippet,
+                        statistics: item.statistics
+                    }));
+
+                    console.log('Formatted category data:', formattedData);
+                    setData(formattedData);
                 }
-
-                // Fetch detailed video stats
-                const videosUrl = `https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`;
-                const videosResponse = await fetch(videosUrl);
-                const videosResult = await videosResponse.json();
-
-                // Merge search results with statistics
-                const mergedData = searchResult.items.map((searchItem, index) => ({
-                    ...searchItem,
-                    id: searchItem.id.videoId,
-                    statistics: videosResult.items?.[index]?.statistics || { viewCount: 0 }
-                }));
-
-                setData(mergedData);
             } catch (err) {
                 console.error('Error fetching videos:', err);
-                setError('Failed to load videos');
+                setError(`Failed to load videos: ${err.message}`);
             } finally {
                 setLoading(false);
             }
@@ -86,7 +106,16 @@ const Feed = ({ category }) => {
     };
 
     if (loading) return <div className="feed">Loading...</div>;
-    if (error) return <div className="feed">{error}</div>;
+    if (error) return (
+        <div className="feed" style={{ padding: '40px', textAlign: 'center', fontSize: '16px' }}>
+            <h2>API Quota Exceeded</h2>
+            <p>{error}</p>
+            <p style={{ marginTop: '20px', fontSize: '14px', color: '#666' }}>
+                Your YouTube API quota has been exceeded for today (24-hour limit: 10,000 requests/day).<br/>
+                Please wait 24 hours or <a href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">create your own API key</a>
+            </p>
+        </div>
+    );
 
     return (
         <div className="feed">
