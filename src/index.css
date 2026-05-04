@@ -1,20 +1,33 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
 }
 
 a {
-    text-decoration: none;
-    color: #5a5a5a;
+  text-decoration: none;
+  color: #5a5a5a;
 }
 
 img {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .flex-div {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 12px;
+  }
 }

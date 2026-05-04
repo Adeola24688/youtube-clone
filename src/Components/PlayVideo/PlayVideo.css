@@ -137,3 +137,163 @@
   margin-right: 20px;
   color: #5a5a5a;
 }
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .play-video {
+    flex-basis: 100%;
+  }
+
+  .play-video iframe {
+    height: 45vw;
+  }
+
+  .play-video h3 {
+    font-size: 18px;
+  }
+
+  .publisher div p {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .play-video iframe {
+    height: 50vw;
+  }
+
+  .play-video h3 {
+    font-size: 16px;
+  }
+
+  .play-video-info {
+    font-size: 13px;
+  }
+
+  .play-video-info span {
+    margin-left: 10px;
+  }
+
+  .publisher {
+    margin-top: 15px;
+  }
+
+  .publisher img {
+    width: 35px;
+    margin-right: 10px;
+  }
+
+  .publisher div p {
+    font-size: 14px;
+  }
+
+  .publisher div span {
+    font-size: 12px;
+  }
+
+  .publisher button {
+    padding: 6px 20px;
+    font-size: 12px;
+  }
+
+  .vid-description {
+    padding-left: 40px;
+  }
+
+  .comment img {
+    width: 30px;
+  }
+
+  .comment h3 {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .play-video iframe {
+    height: 60vw;
+  }
+
+  .play-video h3 {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .play-video-info {
+    font-size: 11px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .play-video-info span {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+
+  .publisher {
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .publisher img {
+    width: 30px;
+    margin-right: 8px;
+  }
+
+  .publisher div p {
+    font-size: 12px;
+  }
+
+  .publisher div span {
+    font-size: 11px;
+  }
+
+  .publisher button {
+    padding: 5px 15px;
+    font-size: 11px;
+    margin-top: 10px;
+  }
+
+  .vid-description {
+    padding-left: 30px;
+    margin: 10px 0;
+  }
+
+  .vid-description p {
+    font-size: 12px;
+  }
+
+  .vid-description h4 {
+    font-size: 12px;
+  }
+
+  .comment {
+    margin: 15px 0;
+  }
+
+  .comment img {
+    width: 25px;
+    margin-right: 8px;
+  }
+
+  .comment h3 {
+    font-size: 12px;
+  }
+
+  .comment h3 span {
+    font-size: 10px;
+    margin-left: 5px;
+  }
+
+  .comment p {
+    font-size: 11px;
+  }
+
+  .comment-action {
+    font-size: 12px;
+  }
+
+  .comment-action img {
+    width: 18px;
+  }
+}

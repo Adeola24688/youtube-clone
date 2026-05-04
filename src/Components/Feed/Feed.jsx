@@ -31,21 +31,37 @@ const Feed = ({ category }) => {
                 let videoUrl;
                 
                 if (category === 0) {
-                    // For Home, show a message about API quota and use placeholder data
+                    // For Home, fetch popular videos with view counts
                     try {
-                        const searchUrl = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=20&type=video&q=tutorial&key=${API_KEY}`;
+                        const searchUrl = `https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&type=video&q=tutorial&key=${API_KEY}`;
                         const searchResponse = await fetch(searchUrl);
                         const searchResult = await searchResponse.json();
 
                         if (searchResult.items && searchResult.items.length > 0) {
-                            const formattedData = searchResult.items
+                            // Get video IDs for statistics
+                            const videoIds = searchResult.items
                                 .filter(item => item.id.videoId)
-                                .map(item => ({
-                                    id: item.id.videoId,
-                                    snippet: item.snippet,
-                                    statistics: { viewCount: 0, likeCount: 0, commentCount: 0 }
-                                }));
-                            setData(formattedData);
+                                .map(item => item.id.videoId)
+                                .slice(0, 50)
+                                .join(',');
+
+                            if (videoIds) {
+                                // Fetch statistics for these videos
+                                const statsUrl = `https://youtube.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${API_KEY}`;
+                                const statsResponse = await fetch(statsUrl);
+                                const statsResult = await statsResponse.json();
+
+                                const formattedData = searchResult.items
+                                    .filter(item => item.id.videoId)
+                                    .map((item, index) => ({
+                                        id: item.id.videoId,
+                                        snippet: item.snippet,
+                                        statistics: statsResult.items?.[index]?.statistics || { viewCount: 0, likeCount: 0, commentCount: 0 }
+                                    }));
+                                setData(formattedData);
+                            } else {
+                                throw new Error('No video IDs found');
+                            }
                         } else {
                             throw new Error('No videos found');
                         }
